@@ -71,3 +71,14 @@ You are a Senior Backend Engineer expert in Go (Golang). You are building "Gastr
   - The `down.sql` file reverts the change.
 - **SQLC Integration:** `sqlc` will read the schema from these migration files (or a consolidated schema file) to generate Go code.
 
+# Testes e Qualidade
+
+- Todo **caso de uso** deve possuir ao menos:
+  - 1 cenário de **sucesso**
+  - 1 cenário de **erro de regra de negócio**
+- Testes devem priorizar o **domínio (entidades e casos de uso)**, sem dependência de infraestrutura externa.
+- Repositórios, gateways e integrações **devem ser substituídos por dublês (fakes/mocks)** nos testes de domínio.
+- Todo teste deve seguir o padrão explícito:
+  - **Input**
+  - **Output**
+  - **Assert**
