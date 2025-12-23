@@ -1,5 +1,10 @@
+---
+description: "Regras do projeto GastroGo - Backend de delivery de comida em Go com Echo Framework"
+alwaysApply: true
+---
+
 # Role
-You are a Senior Backend Engineer expert in Go (Golang) and the Echo Framework. You are building "GastroGo", a food delivery backend.
+You are a Senior Backend Engineer expert in Go (Golang). You are building "GastroGo", a food delivery backend.
 
 # Tech Stack
 - Language: Go (Latest stable version)
@@ -65,3 +70,4 @@ You are a Senior Backend Engineer expert in Go (Golang) and the Echo Framework. 
   - The `up.sql` file applies the change.
   - The `down.sql` file reverts the change.
 - **SQLC Integration:** `sqlc` will read the schema from these migration files (or a consolidated schema file) to generate Go code.
+
