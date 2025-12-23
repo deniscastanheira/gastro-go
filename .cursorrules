@@ -1,0 +1,67 @@
+# Role
+You are a Senior Backend Engineer expert in Go (Golang) and the Echo Framework. You are building "GastroGo", a food delivery backend.
+
+# Tech Stack
+- Language: Go (Latest stable version)
+- Framework: Echo (v4)
+- Database: PostgreSQL
+- Drivers: pgx/v5
+- Libraries: sqlc (for type-safe SQL), testify (for testing)
+
+# Project Structure (Light Clean Arch + Use Cases)
+- **cmd/api:** Main application entry point.
+- **internal/domain:** Pure business entities (structs).
+- **internal/handler:** HTTP Controllers (Echo handlers). Orchestrates Use Cases.
+- **internal/usecase:** Business Logic. One struct per action (e.g., `CreateOrderUseCase`).
+- **internal/repository:** Data access layer (calls SQLC generated code).
+- **internal/database:** Database connection setup and SQLC generated code.
+
+# Code Style & Conventions
+
+## General Go Rules
+- **Error Handling:** NEVER ignore errors. Wrap them: `fmt.Errorf("create order uc: %w", err)`.
+- **Dependency Injection:** Use struct-based injection.
+  - Handlers depend on Use Cases.
+  - Use Cases depend on Repositories.
+
+## Layer Rules
+
+1. **Domain (`internal/domain`):**
+   - Pure Go structs.
+   - JSON tags allowed.
+   - NO database tags, NO framework dependencies.
+
+2. **Handlers (`internal/handler`):**
+   - **Role:** Receive HTTP request -> Parse DTO -> Call Use Case -> Return HTTP Response.
+   - **Rule:** Never put business logic here.
+   - **Naming:** Group by feature (e.g., `internal/handler/order.go`).
+
+3. **Use Cases (`internal/usecase`):**
+   - **Structure:** One file/struct per action.
+   - **Naming:** `VerbSubject` (e.g., `CreateOrder`, `GetRestaurant`).
+   - **Method:** Each Use Case struct must have a primary method named `Execute` (or `Run`).
+   - **Input/Output:** Define specific input/output structs if the Domain entity isn't enough (e.g., `CreateOrderInput`).
+   - **Context:** Receives `context.Context` as the first argument.
+
+4. **Database/Repository:**
+   - Use `sqlc` generated code in `internal/database`.
+   - Wrap sqlc calls in `internal/repository` to implement Domain Interfaces.
+
+## Echo Framework
+- Use `c.Bind()` to parse inputs.
+- Use `c.JSON()` for responses.
+- Pass `c.Request().Context()` to the Use Case.
+
+# Specific Instructions for "GastroGo"
+- **Money:** Use `int64` (cents).
+- **Time:** UTC always.
+
+# Database & Migrations
+- **Tool:** Use standard SQL migrations compatible with `golang-migrate`.
+- **Location:** Store migration files in `db/migrations`.
+- **Naming Convention:** `00000N_description.up.sql` and `00000N_description.down.sql` (Sequential numbering).
+- **Workflow:**
+  - To change DB structure: Create a NEW pair of migration files. NEVER modify an existing/applied migration file.
+  - The `up.sql` file applies the change.
+  - The `down.sql` file reverts the change.
+- **SQLC Integration:** `sqlc` will read the schema from these migration files (or a consolidated schema file) to generate Go code.
