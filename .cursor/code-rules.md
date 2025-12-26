@@ -77,7 +77,7 @@ You are a Senior Backend Engineer expert in Go (Golang). You are building "Gastr
   - 1 cenário de **sucesso**
   - 1 cenário de **erro de regra de negócio**
 - Testes devem priorizar o **domínio (entidades e casos de uso)**, sem dependência de infraestrutura externa.
-- Repositórios, gateways e integrações **devem ser substituídos por dublês (fakes/mocks)** nos testes de domínio.
+- Repositórios, gateways e integrações **devem ser substituídos por fakes ou mocks** nos testes de domínio.
 - Todo teste deve seguir o padrão explícito:
   - **Input**
   - **Output**
