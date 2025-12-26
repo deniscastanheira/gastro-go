@@ -7,16 +7,22 @@ import (
 	"github.com/google/uuid"
 
 	"gastro-go/internal/domain"
-	"gastro-go/internal/repository"
 )
+
+// RestaurantCloser define a interface mínima necessária para fechar restaurantes
+// Segue Interface Segregation Principle: apenas os métodos que este use case precisa
+type RestaurantCloser interface {
+	GetByID(ctx context.Context, id uuid.UUID) (*domain.Restaurant, error)
+	UpdateStatus(ctx context.Context, id uuid.UUID, status string) error
+}
 
 // CloseRestaurantUseCase implementa o caso de uso de fechar um restaurante
 type CloseRestaurantUseCase struct {
-	repo repository.RestaurantRepositoryInterface
+	repo RestaurantCloser
 }
 
 // NewCloseRestaurantUseCase cria uma nova instância do use case
-func NewCloseRestaurantUseCase(repo repository.RestaurantRepositoryInterface) *CloseRestaurantUseCase {
+func NewCloseRestaurantUseCase(repo RestaurantCloser) *CloseRestaurantUseCase {
 	return &CloseRestaurantUseCase{
 		repo: repo,
 	}

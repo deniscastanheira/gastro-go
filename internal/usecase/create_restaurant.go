@@ -8,17 +8,23 @@ import (
 	"github.com/google/uuid"
 
 	"gastro-go/internal/domain"
-	"gastro-go/internal/repository"
 	"gastro-go/internal/utils"
 )
 
+// RestaurantCreator define a interface mínima necessária para criar restaurantes
+// Segue Interface Segregation Principle: apenas os métodos que este use case precisa
+type RestaurantCreator interface {
+	SlugExists(ctx context.Context, slug string) (bool, error)
+	Create(ctx context.Context, restaurant *domain.Restaurant) error
+}
+
 // CreateRestaurantUseCase implementa o caso de uso de criação de restaurante
 type CreateRestaurantUseCase struct {
-	repo repository.RestaurantRepositoryInterface
+	repo RestaurantCreator
 }
 
 // NewCreateRestaurantUseCase cria uma nova instância do use case
-func NewCreateRestaurantUseCase(repo repository.RestaurantRepositoryInterface) *CreateRestaurantUseCase {
+func NewCreateRestaurantUseCase(repo RestaurantCreator) *CreateRestaurantUseCase {
 	return &CreateRestaurantUseCase{
 		repo: repo,
 	}

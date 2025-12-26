@@ -6,9 +6,25 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/mock"
 
 	"gastro-go/internal/domain"
 )
+
+// MockRestaurantLister é um mock específico para RestaurantLister
+// Implementa apenas o método necessário para ListRestaurantsUseCase
+// Segue Interface Segregation Principle: mock focado e simples
+type MockRestaurantLister struct {
+	mock.Mock
+}
+
+func (m *MockRestaurantLister) List(ctx context.Context, limit, offset int32) ([]*domain.Restaurant, error) {
+	args := m.Called(ctx, limit, offset)
+	if args.Get(0) == nil {
+		return nil, args.Error(1)
+	}
+	return args.Get(0).([]*domain.Restaurant), args.Error(1)
+}
 
 func TestListRestaurantsUseCase_Execute_Success(t *testing.T) {
 	// Input
@@ -54,7 +70,7 @@ func TestListRestaurantsUseCase_Execute_Success(t *testing.T) {
 	}
 
 	// Mock
-	mockRepo := new(MockRestaurantRepository)
+	mockRepo := new(MockRestaurantLister)
 	mockRepo.On("List", ctx, int32(10), int32(0)).Return([]*domain.Restaurant{restaurant1, restaurant2}, nil)
 
 	// Execute
@@ -82,7 +98,7 @@ func TestListRestaurantsUseCase_Execute_DefaultValues(t *testing.T) {
 	}
 
 	// Mock
-	mockRepo := new(MockRestaurantRepository)
+	mockRepo := new(MockRestaurantLister)
 	mockRepo.On("List", ctx, int32(20), int32(0)).Return([]*domain.Restaurant{}, nil)
 
 	// Execute

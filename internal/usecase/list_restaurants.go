@@ -6,16 +6,21 @@ import (
 	"time"
 
 	"gastro-go/internal/domain"
-	"gastro-go/internal/repository"
 )
+
+// RestaurantLister define a interface mínima necessária para listar restaurantes
+// Segue Interface Segregation Principle: apenas o método que este use case precisa
+type RestaurantLister interface {
+	List(ctx context.Context, limit, offset int32) ([]*domain.Restaurant, error)
+}
 
 // ListRestaurantsUseCase implementa o caso de uso de listagem de restaurantes
 type ListRestaurantsUseCase struct {
-	repo repository.RestaurantRepositoryInterface
+	repo RestaurantLister
 }
 
 // NewListRestaurantsUseCase cria uma nova instância do use case
-func NewListRestaurantsUseCase(repo repository.RestaurantRepositoryInterface) *ListRestaurantsUseCase {
+func NewListRestaurantsUseCase(repo RestaurantLister) *ListRestaurantsUseCase {
 	return &ListRestaurantsUseCase{
 		repo: repo,
 	}

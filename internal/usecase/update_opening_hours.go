@@ -7,16 +7,23 @@ import (
 	"github.com/google/uuid"
 
 	"gastro-go/internal/domain"
-	"gastro-go/internal/repository"
 )
+
+// OpeningHoursUpdater define a interface mínima necessária para atualizar horários de funcionamento
+// Segue Interface Segregation Principle: apenas os métodos que este use case precisa
+type OpeningHoursUpdater interface {
+	GetByID(ctx context.Context, id uuid.UUID) (*domain.Restaurant, error)
+	DeleteOpeningHoursByRestaurant(ctx context.Context, restaurantID uuid.UUID) error
+	CreateOpeningHour(ctx context.Context, hour *domain.OpeningHour) error
+}
 
 // UpdateOpeningHoursUseCase implementa o caso de uso de atualizar horários de funcionamento
 type UpdateOpeningHoursUseCase struct {
-	repo repository.RestaurantRepositoryInterface
+	repo OpeningHoursUpdater
 }
 
 // NewUpdateOpeningHoursUseCase cria uma nova instância do use case
-func NewUpdateOpeningHoursUseCase(repo repository.RestaurantRepositoryInterface) *UpdateOpeningHoursUseCase {
+func NewUpdateOpeningHoursUseCase(repo OpeningHoursUpdater) *UpdateOpeningHoursUseCase {
 	return &UpdateOpeningHoursUseCase{
 		repo: repo,
 	}

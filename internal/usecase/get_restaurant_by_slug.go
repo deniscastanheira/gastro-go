@@ -6,16 +6,21 @@ import (
 	"time"
 
 	"gastro-go/internal/domain"
-	"gastro-go/internal/repository"
 )
+
+// RestaurantGetterBySlug define a interface mínima necessária para buscar restaurante por slug
+// Segue Interface Segregation Principle: apenas o método que este use case precisa
+type RestaurantGetterBySlug interface {
+	GetBySlug(ctx context.Context, slug string) (*domain.Restaurant, error)
+}
 
 // GetRestaurantBySlugUseCase implementa o caso de uso de buscar restaurante por slug
 type GetRestaurantBySlugUseCase struct {
-	repo repository.RestaurantRepositoryInterface
+	repo RestaurantGetterBySlug
 }
 
 // NewGetRestaurantBySlugUseCase cria uma nova instância do use case
-func NewGetRestaurantBySlugUseCase(repo repository.RestaurantRepositoryInterface) *GetRestaurantBySlugUseCase {
+func NewGetRestaurantBySlugUseCase(repo RestaurantGetterBySlug) *GetRestaurantBySlugUseCase {
 	return &GetRestaurantBySlugUseCase{
 		repo: repo,
 	}

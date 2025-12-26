@@ -27,7 +27,31 @@ You are a Senior Backend Engineer expert in Go (Golang). You are building "Gastr
 - **Error Handling:** NEVER ignore errors. Wrap them: `fmt.Errorf("create order uc: %w", err)`.
 - **Dependency Injection:** Use struct-based injection.
   - Handlers depend on Use Cases.
-  - Use Cases depend on Repositories.
+  - Use Cases depend on Repositories (via interfaces).
+
+## Interface Design (Interface Segregation Principle)
+
+**Regra:** Use cases definem suas próprias interfaces específicas no mesmo arquivo (consumer-defined interfaces).
+
+- **Onde:** No arquivo do use case (`internal/usecase/`)
+- **O que:** Apenas os métodos que o use case realmente utiliza
+- **Como:** Interface mínima e específica (ex: `RestaurantCreator`, `RestaurantLister`)
+- **Benefício:** Baixo acoplamento, melhor testabilidade, segue "Accept interfaces, return structs" (idioma Go)
+
+**Exemplo:**
+```go
+// internal/usecase/create_restaurant.go
+type RestaurantCreator interface {
+    SlugExists(ctx context.Context, slug string) (bool, error)
+    Create(ctx context.Context, restaurant *domain.Restaurant) error
+}
+
+type CreateRestaurantUseCase struct {
+    repo RestaurantCreator  // Interface específica
+}
+```
+
+**Nota:** O repository implementa implicitamente todas as interfaces via duck typing do Go.
 
 ## Layer Rules
 
@@ -47,6 +71,9 @@ You are a Senior Backend Engineer expert in Go (Golang). You are building "Gastr
    - **Method:** Each Use Case struct must have a primary method named `Execute` (or `Run`).
    - **Input/Output:** Define specific input/output structs if the Domain entity isn't enough (e.g., `CreateOrderInput`).
    - **Context:** Receives `context.Context` as the first argument.
+   - **Interfaces:** Define interfaces específicas no próprio arquivo do use case (consumer-defined interfaces).
+     - Interface deve conter apenas os métodos que o use case realmente utiliza.
+     - Nome da interface deve refletir a responsabilidade (ex: `RestaurantCreator`, `RestaurantLister`).
 
 4. **Database/Repository:**
    - Use `sqlc` generated code in `internal/database`.

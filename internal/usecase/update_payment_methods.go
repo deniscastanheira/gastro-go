@@ -7,16 +7,23 @@ import (
 	"github.com/google/uuid"
 
 	"gastro-go/internal/domain"
-	"gastro-go/internal/repository"
 )
+
+// PaymentMethodsUpdater define a interface mínima necessária para atualizar métodos de pagamento
+// Segue Interface Segregation Principle: apenas os métodos que este use case precisa
+type PaymentMethodsUpdater interface {
+	GetByID(ctx context.Context, id uuid.UUID) (*domain.Restaurant, error)
+	DeletePaymentMethodsByRestaurant(ctx context.Context, restaurantID uuid.UUID) error
+	CreatePaymentMethod(ctx context.Context, method *domain.PaymentMethod) error
+}
 
 // UpdatePaymentMethodsUseCase implementa o caso de uso de atualizar métodos de pagamento
 type UpdatePaymentMethodsUseCase struct {
-	repo repository.RestaurantRepositoryInterface
+	repo PaymentMethodsUpdater
 }
 
 // NewUpdatePaymentMethodsUseCase cria uma nova instância do use case
-func NewUpdatePaymentMethodsUseCase(repo repository.RestaurantRepositoryInterface) *UpdatePaymentMethodsUseCase {
+func NewUpdatePaymentMethodsUseCase(repo PaymentMethodsUpdater) *UpdatePaymentMethodsUseCase {
 	return &UpdatePaymentMethodsUseCase{
 		repo: repo,
 	}

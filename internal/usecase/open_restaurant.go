@@ -7,16 +7,24 @@ import (
 	"github.com/google/uuid"
 
 	"gastro-go/internal/domain"
-	"gastro-go/internal/repository"
 )
+
+// RestaurantOpener define a interface mínima necessária para abrir restaurantes
+// Segue Interface Segregation Principle: apenas os métodos que este use case precisa
+type RestaurantOpener interface {
+	GetByID(ctx context.Context, id uuid.UUID) (*domain.Restaurant, error)
+	GetOpeningHours(ctx context.Context, restaurantID uuid.UUID) ([]*domain.OpeningHour, error)
+	GetPaymentMethods(ctx context.Context, restaurantID uuid.UUID) ([]*domain.PaymentMethod, error)
+	UpdateStatus(ctx context.Context, id uuid.UUID, status string) error
+}
 
 // OpenRestaurantUseCase implementa o caso de uso de abrir um restaurante
 type OpenRestaurantUseCase struct {
-	repo repository.RestaurantRepositoryInterface
+	repo RestaurantOpener
 }
 
 // NewOpenRestaurantUseCase cria uma nova instância do use case
-func NewOpenRestaurantUseCase(repo repository.RestaurantRepositoryInterface) *OpenRestaurantUseCase {
+func NewOpenRestaurantUseCase(repo RestaurantOpener) *OpenRestaurantUseCase {
 	return &OpenRestaurantUseCase{
 		repo: repo,
 	}
